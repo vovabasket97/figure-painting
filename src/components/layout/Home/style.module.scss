@@ -1,0 +1,7 @@
+.home {
+  @apply min-h-screen w-full flex flex-col h-full bg-green-light;
+}
+
+.body {
+  @apply h-full bg-main flex-1 p-5;
+}
