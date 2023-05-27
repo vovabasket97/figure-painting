@@ -1,36 +1,46 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 
-import { Modal, NumberInput, Group, Button } from '@mantine/core';
+import { Modal, TextInput, Group, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useActions } from 'hooks/useActions';
+import { useTypedSelector } from 'hooks/useTypedSelector';
 
 interface IProjectIdModal {
   close: () => void;
   opened: boolean;
 }
 
+interface IInitialValuesForm {
+  id: string;
+}
+
 const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
+  const projectId = useTypedSelector(state => state.project.projectId);
+  const actions = useActions();
   const form = useForm({
     initialValues: {
       id: ''
-    },
-    validate: {
-      id: (value: string) => (String(value).replace(/[^0-9.]/g, '').length ? null : 'The field should consist only of numbers.')
-    }
+    } as IInitialValuesForm
   });
 
+  const onCloseHandler = useCallback(() => {
+    close();
+
+    if (!projectId) actions.getProjectId();
+  }, [projectId]);
+
+  const onSubmitHandler = useCallback((values: IInitialValuesForm) => {
+    close();
+    actions.getProjectById(values.id);
+  }, []);
+
   return (
-    <Modal opened={opened} onClose={close} title='Fetch project'>
-      <form onSubmit={form.onSubmit(values => console.log(values))}>
-        <NumberInput
-          hideControls
-          type='number'
-          withAsterisk
-          label='Project id'
-          placeholder='Enter project id'
-          {...form.getInputProps('id')}
-        />
+    <Modal opened={opened} onClose={onCloseHandler} centered closeOnClickOutside={false} closeOnEscape={false} title='Fetch project'>
+      <form onSubmit={form.onSubmit(values => onSubmitHandler(values))}>
+        <TextInput withAsterisk label='Project id' placeholder='Enter project id' {...form.getInputProps('id')} />
 
         <Group position='right' mt='md'>
+          <Button onClick={onCloseHandler} color='red'>{`I don't have`}</Button>
           <Button type='submit'>Fetch</Button>
         </Group>
       </form>
