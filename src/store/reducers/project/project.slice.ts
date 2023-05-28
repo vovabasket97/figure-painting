@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ProjectService } from 'services/project.service';
 import { notifications } from '@mantine/notifications';
 import { IExtendedProject } from 'shared/project/projectData.types';
+import { notificationConfig } from 'config/notification';
 
 interface IInitialState {
   projectId: null | string;
@@ -9,70 +10,94 @@ interface IInitialState {
   projectData: IExtendedProject | null;
 }
 
+const message = 'Something was wrong on getting project id! Try please later.';
+
 export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thunkAPI) => {
-  const req = await ProjectService.getProjectId()
+  return await ProjectService.getProjectId()
     .then(res => {
-      return res.data.id;
+      return thunkAPI.fulfillWithValue(res.data.id);
     })
     .catch(() => {
-      return thunkAPI.rejectWithValue('Something was wrong on getting project id! Try please later.');
+      thunkAPI.rejectWithValue(message);
+      return message;
     });
-
-  return req;
 });
 
 export const getProjectById = createAsyncThunk('step1/getProjectById', async (id: string | number, thunkAPI) => {
-  const req = await ProjectService.getProjectByID(id)
+  return await ProjectService.getProjectByID(id)
     .then(res => {
-      return res.data.project;
+      return thunkAPI.fulfillWithValue(res.data.project);
     })
     .catch(() => {
-      return thunkAPI.rejectWithValue('Something was wrong on getting project data! Try please later or another id.');
+      thunkAPI.rejectWithValue(message);
+      return message;
     });
-
-  return req;
 });
 
 const ProjectSlice = createSlice({
   name: 'projects',
   initialState: {
     projectId: null,
-    error: null
+    error: null,
+    projectData: null
   } as IInitialState,
   reducers: {},
   extraReducers: builder => {
     // getting project id
     builder.addCase(getProjectId.pending, () => {
-      notifications.show({
-        id: 'loading-project',
-        withCloseButton: false,
-        title: 'Loading',
-        message: 'Getting project id!',
-        loading: true
-      });
+      notifications.show(
+        notificationConfig.pending({
+          id: 'loading-project',
+          message: 'Getting project id!'
+        })
+      );
     });
     builder.addCase(getProjectId.fulfilled, (state, action) => {
       state.projectId = action.payload;
+      notifications.update(
+        notificationConfig.success({
+          id: 'loading-project',
+          message: 'Project Id has been get!'
+        })
+      );
     });
     builder.addCase(getProjectId.rejected, (state, action) => {
       state.error = action.payload as string;
+      notifications.update(
+        notificationConfig.error({
+          id: 'loading-project',
+          message: 'Please, try another time.'
+        })
+      );
     });
 
     // getting project data by id
     builder.addCase(getProjectById.pending, () => {
-      notifications.show({
-        id: 'loading-data-by-id',
-        withCloseButton: false,
-        title: 'Loading',
-        message: 'Getting project data!',
-        loading: true
-      });
+      notifications.show(
+        notificationConfig.pending({
+          id: 'loading-data-by-id',
+          message: 'Getting project data!'
+        })
+      );
     });
     builder.addCase(getProjectById.fulfilled, (state, action) => {
-      state.projectData = action.payload;
+      state.projectData = action.payload as IExtendedProject;
+      state.projectId = state.projectData.id;
+      notifications.update(
+        notificationConfig.success({
+          id: 'loading-data-by-id',
+          message: 'Let me a one moment for generate image'
+        })
+      );
     });
     builder.addCase(getProjectById.rejected, (state, action) => {
       state.error = action.payload as string;
+      notifications.update(
+        notificationConfig.error({
+          id: 'loading-data-by-id',
+          message: 'Please, try another time. Or another Id.'
+        })
+      );
     });
   }
 });

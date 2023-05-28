@@ -3,9 +3,9 @@ interface IProject {
   name: string; // nazwa projektu
 }
 
-interface IShape {
+export interface IShape {
   id: string; // unikatowe id elementu
-  type: 'rectange' | 'ellipse'; //typ obiektu
+  type: 'rectangle' | 'ellipse'; //typ obiektu
   color: string; // color elementu w formacie '#RRGGBB'
   rotation: number; // kat obrotu elementu [0°, 360°]
   x: number; // wspolrzedna X srodka elementu
