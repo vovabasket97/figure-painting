@@ -9,13 +9,11 @@ const SvgEditor = () => {
   const projectData = useTypedSelector(state => state.project.projectData);
 
   useQuery(['projectData', projectId], () => actions.getProjectById(projectId as string | number), {
-    enabled: projectId !== null && projectData === null
+    enabled: projectId !== null
   });
 
   if (!projectId) return <div>Project Id is not defined!</div>;
   if (!projectData) return <div>Project wasn`t download.</div>;
-
-  console.log(projectData);
 
   return (
     <CreateCanvas

@@ -1,6 +1,8 @@
-import { IShape } from 'shared/project/projectData.types';
+import { FC, memo } from 'react';
 import { Rectangle } from './modules/createRectangle';
-import { FC } from 'react';
+import { Ellipse } from './modules/createEllipse';
+
+import { IShape } from 'shared/project/projectData.types';
 
 interface IItems {
   data: IShape[];
@@ -9,17 +11,17 @@ interface IItems {
 const RenderItems: FC<IItems> = ({ data }) => {
   return data.length ? (
     <>
-      {data
-        .filter(el => el.type === 'rectangle')
-        .map(({ type, ...another }) => {
-          if (type === 'rectangle') {
-            return <Rectangle key={another.id} shapeProps={another} onSelect={() => {}} />;
-          } else return null;
-        })}
+      {data.map(({ type, ...another }, index) => {
+        if (type === 'rectangle') {
+          return <Rectangle key={another.id} shapeProps={another} />;
+        } else if (type === 'ellipse') {
+          return <Ellipse key={another.id} shapeProps={another} />;
+        }
+      })}
     </>
   ) : (
     <div>No elements for render.</div>
   );
 };
 
-export default RenderItems;
+export default memo(RenderItems);

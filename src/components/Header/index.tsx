@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { Header as HeaderComp, Group, Button, Box, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconLivePhoto } from '@tabler/icons-react';
@@ -37,4 +37,4 @@ const Header: FC = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

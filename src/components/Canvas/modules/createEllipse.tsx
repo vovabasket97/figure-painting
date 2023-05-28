@@ -1,16 +1,16 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Circle, Group, Rect, Text } from 'react-konva';
-import { Rect as RectType } from 'konva/lib/shapes/Rect';
+import { Group, Rect, Text, Ellipse as EllipseComp, Circle } from 'react-konva';
 import { Node, NodeConfig } from 'konva/lib/Node';
 import { IShapeClientBox, IShapeComponent } from 'shared/konva/konva.types';
+import { Ellipse as EllipseType } from 'konva/lib/shapes/Ellipse';
 
 const rectParams = {
   stroke: '#00000050',
   strokeWidth: 0.5
 };
 
-export const Rectangle = memo(({ shapeProps }: IShapeComponent) => {
-  const shapeRef = React.useRef<RectType>(null);
+export const Ellipse = memo(({ shapeProps }: IShapeComponent) => {
+  const shapeRef = React.useRef<EllipseType>(null);
   const groupRef = React.useRef(null);
 
   const [shapeClientRect, setShapeClientRect] = useState<IShapeClientBox | null>(null);
@@ -32,12 +32,16 @@ export const Rectangle = memo(({ shapeProps }: IShapeComponent) => {
   return (
     <Group ref={groupRef} draggable={false}>
       <Rect {...rectParams} {...shapeClientRect} stroke='red' draggable={false} />
-      <Rect
+      <EllipseComp
+        radiusX={0}
+        radiusY={0}
         ref={shapeRef}
         fill={shapeProps.color}
         {...shapeProps}
-        offsetX={shapeProps.width / 2}
-        offsetY={shapeProps.height / 2}
+        width={shapeProps.width}
+        height={shapeProps.height}
+        // offsetX={shapeProps.width / 2}
+        // offsetY={shapeProps.height / 2}
         draggable={false}
       />
       {shapeClientRect !== null && (

@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ProjectService } from 'services/project.service';
 import { notifications } from '@mantine/notifications';
-import { IExtendedProject } from 'shared/project/projectData.types';
+import { IExtendedProject, IProjectData } from 'shared/project/projectData.types';
 import { notificationConfig } from 'config/notification';
+import { validateData } from 'utils/validateData';
 
 interface IInitialState {
   projectId: null | string;
@@ -12,10 +13,10 @@ interface IInitialState {
 
 const message = 'Something was wrong on getting project id! Try please later.';
 
-export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thunkAPI) => {
+export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thunkAPI): Promise<string> => {
   return await ProjectService.getProjectId()
     .then(res => {
-      return thunkAPI.fulfillWithValue(res.data.id);
+      return res.data.id;
     })
     .catch(() => {
       thunkAPI.rejectWithValue(message);
@@ -24,13 +25,24 @@ export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thu
 });
 
 export const getProjectById = createAsyncThunk('step1/getProjectById', async (id: string | number, thunkAPI) => {
-  return await ProjectService.getProjectByID(id)
+  return await new Promise<IProjectData>((resolve, req) => {
+    ProjectService.getProjectByID(id)
+      .then(res => {
+        const check = validateData(res.data.project.items);
+
+        if (!check) req(message);
+
+        resolve(res.data);
+      })
+      .catch(() => {
+        req(message);
+      });
+  })
     .then(res => {
-      return thunkAPI.fulfillWithValue(res.data.project);
+      return thunkAPI.fulfillWithValue(res.project);
     })
     .catch(() => {
-      thunkAPI.rejectWithValue(message);
-      return message;
+      return thunkAPI.rejectWithValue(message);
     });
 });
 

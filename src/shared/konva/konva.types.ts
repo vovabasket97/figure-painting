@@ -15,3 +15,21 @@ export interface IBox {
   width: number;
   height: number;
 }
+
+export interface IShapeProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation?: number;
+  color?: string;
+}
+
+export interface IShapeComponent {
+  shapeProps: IShapeProps;
+}
+
+export interface IShapeClientBox extends Omit<IShapeProps, 'rotation' | 'color'> {
+  centralX: number;
+  centralY: number;
+}

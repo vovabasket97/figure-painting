@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { Modal, TextInput, Group, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -23,11 +23,14 @@ const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
     } as IInitialValuesForm
   });
 
-  const onCloseHandler = useCallback(() => {
-    close();
+  const onCloseHandler = useCallback(
+    (action?: 'update') => {
+      close();
 
-    if (!projectId) actions.getProjectId();
-  }, [projectId]);
+      if (action && action === 'update') actions.getProjectId();
+    },
+    [projectId]
+  );
 
   const onSubmitHandler = useCallback((values: IInitialValuesForm) => {
     close();
@@ -40,7 +43,7 @@ const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
         <TextInput withAsterisk label='Project id' placeholder='Enter project id' {...form.getInputProps('id')} />
 
         <Group position='right' mt='md'>
-          <Button onClick={onCloseHandler} color='red'>{`I don't have`}</Button>
+          <Button onClick={onCloseHandler.bind(null, 'update')} color='red'>{`I don't have`}</Button>
           <Button type='submit'>Fetch</Button>
         </Group>
       </form>
@@ -48,4 +51,4 @@ const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
   );
 };
 
-export default ProjectIdModal;
+export default memo(ProjectIdModal);

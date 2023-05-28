@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
+import React, { useEffect, useRef, useCallback, memo } from 'react';
 
 import { Stage, Layer } from 'react-konva';
-import { useDetection } from './hooks/useDetection';
 
 import RenderItems from './RenderItems';
-import Transformers from './modules/transformers';
 
 import { IShape } from 'shared/project/projectData.types';
-import { KonvaEventObject } from 'konva/lib/Node';
 import { useWindowEvent } from '@mantine/hooks';
 
 interface ICanvas {
@@ -23,17 +20,9 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
   const parentRef = useRef(null);
   const stageRef = useRef(null);
   const layerRef = useRef(null);
-  const [selectedId, selectShape] = useState(null);
   const [width, setWidth] = React.useState(300);
   const [height, setHeight] = React.useState(300);
   const [scale, setScale] = React.useState(1);
-  //   const selectedItem = useMemo(() => data.find(el => el.id == selectedId), [selectedId, data]);
-  const { checkDeselect } = useDetection();
-
-  const onMouseDownHandler = useCallback((evt: KonvaEventObject<MouseEvent>) => checkDeselect(evt, selectShape), [checkDeselect]);
-  const onTouchStart = useCallback((evt: KonvaEventObject<TouchEvent>) => checkDeselect(evt, selectShape), [checkDeselect]);
-
-  useEffect(() => selectShape(null), [data]);
 
   const reponsiveFunc = useCallback(() => {
     const availableWidth = window.innerWidth - 40;
@@ -52,7 +41,7 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
 
   useEffect(() => {
     reponsiveFunc();
-  }, [stageDimensions]);
+  }, [stageDimensions, canvasId]);
 
   useWindowEvent('resize', reponsiveFunc);
 
@@ -66,20 +55,10 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
         border: '1px solid black'
       }}
     >
-      <Stage
-        id={canvasId}
-        width={width * scale}
-        height={height * scale}
-        onMouseDown={onMouseDownHandler}
-        onTouchStart={onTouchStart}
-        ref={stageRef}
-        scaleX={scale}
-        scaleY={scale}
-      >
+      <Stage id={canvasId} width={width * scale} height={height * scale} ref={stageRef} scaleX={scale} scaleY={scale}>
         <Layer ref={layerRef}>
           <RenderItems data={data} />
         </Layer>
-        <Transformers selectedId={selectedId} layer={layerRef} />
       </Stage>
     </div>
   );
