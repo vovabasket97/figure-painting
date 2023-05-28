@@ -11,8 +11,7 @@ const RenderItems: FC<IItems> = ({ data }) => {
     <>
       {data
         .filter(el => el.type === 'rectangle')
-        .map(({ type, ...another }, index) => {
-          if (index !== 0) return;
+        .map(({ type, ...another }) => {
           if (type === 'rectangle') {
             return <Rectangle key={another.id} shapeProps={another} onSelect={() => {}} />;
           } else return null;

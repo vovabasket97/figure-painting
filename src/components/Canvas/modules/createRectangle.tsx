@@ -13,7 +13,7 @@ interface IShapeProps {
   y: number;
   width: number;
   height: number;
-  rotation: number;
+  rotation?: number;
   color?: string;
 }
 
@@ -55,14 +55,14 @@ export const Rectangle = memo(({ shapeProps, onSelect }: IRectangle) => {
         onTap={onSelect}
         ref={shapeRef}
         fill={shapeProps.color}
-        {...rectParams}
         {...shapeProps}
-        stroke={rectParams.stroke}
+        offsetX={shapeProps.width / 2}
+        offsetY={shapeProps.height / 2}
         draggable={false}
       />
       {shapeClientRect !== null && (
         <>
-          <Text x={shapeClientRect.x} y={shapeClientRect.y} fontSize={17} text={`${Math.round(shapeClientRect.width)}`} />
+          <Text x={shapeClientRect.x} y={shapeClientRect.y} fontSize={17} text={`${Math.round(shapeProps.width)}`} />
           <Text
             x={shapeClientRect.x}
             y={shapeClientRect.y + shapeClientRect.height}

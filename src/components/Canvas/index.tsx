@@ -8,6 +8,7 @@ import Transformers from './modules/transformers';
 
 import { IShape } from 'shared/project/projectData.types';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { useWindowEvent } from '@mantine/hooks';
 
 interface ICanvas {
   data: IShape[];
@@ -23,8 +24,8 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
   const stageRef = useRef(null);
   const layerRef = useRef(null);
   const [selectedId, selectShape] = useState(null);
-  const [width, setWidth] = React.useState(stageDimensions.width);
-  const [height, setHeight] = React.useState(stageDimensions.height);
+  const [width, setWidth] = React.useState(300);
+  const [height, setHeight] = React.useState(300);
   const [scale, setScale] = React.useState(1);
   //   const selectedItem = useMemo(() => data.find(el => el.id == selectedId), [selectedId, data]);
   const { checkDeselect } = useDetection();
@@ -34,20 +35,26 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
 
   useEffect(() => selectShape(null), [data]);
 
-  // useEffect(() => {
-  //   const availableWidth = window.innerWidth - 40;
-  //   const availableHeight = window.innerHeight - 99;
-  //   const dimensionWidth = stageDimensions.width;
-  //   const dimensionHeight = stageDimensions.height;
+  const reponsiveFunc = useCallback(() => {
+    const availableWidth = window.innerWidth - 40;
+    const availableHeight = window.innerHeight - 99;
+    const dimensionWidth = stageDimensions.width;
+    const dimensionHeight = stageDimensions.height;
 
-  //   const limitWidth = availableWidth / dimensionWidth < availableHeight / dimensionHeight;
-  //   const width = dimensionWidth;
-  //   const height = dimensionHeight;
-  //   const scale = limitWidth ? availableWidth / dimensionWidth : availableHeight / dimensionHeight;
-  //   setScale(scale);
-  //   setWidth(width);
-  //   setHeight(height);
-  // }, [stageDimensions]);
+    const limitWidth = availableWidth / dimensionWidth < availableHeight / dimensionHeight;
+    const width = dimensionWidth;
+    const height = dimensionHeight;
+    const scale = limitWidth ? availableWidth / dimensionWidth : availableHeight / dimensionHeight;
+    setScale(scale);
+    setWidth(width);
+    setHeight(height);
+  }, []);
+
+  useEffect(() => {
+    reponsiveFunc();
+  }, [stageDimensions]);
+
+  useWindowEvent('resize', reponsiveFunc);
 
   return (
     <div
@@ -55,7 +62,8 @@ const CreateCanvas = ({ data, canvasId, stageDimensions }: ICanvas) => {
       style={{
         marginLeft: 'auto',
         marginRight: 'auto',
-        width: 'fit-content'
+        width: 'fit-content',
+        border: '1px solid black'
       }}
     >
       <Stage
