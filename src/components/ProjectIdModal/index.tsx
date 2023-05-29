@@ -43,7 +43,9 @@ const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
         <TextInput withAsterisk label='Project id' placeholder='Enter project id' {...form.getInputProps('id')} />
 
         <Group position='right' mt='md'>
-          <Button onClick={onCloseHandler.bind(null, 'update')} color='red'>{`I don't have`}</Button>
+          <Button onClick={onCloseHandler.bind(null, 'update')} color='red'>
+            Get Id from server
+          </Button>
           <Button type='submit'>Fetch</Button>
         </Group>
       </form>
