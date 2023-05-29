@@ -27,7 +27,7 @@ const ProjectIdModal: FC<IProjectIdModal> = ({ close, opened }) => {
     (action?: 'update') => {
       close();
 
-      if (action && action === 'update') actions.getProjectId();
+      if ((action && action === 'update') || !projectId) actions.getProjectId();
     },
     [projectId]
   );

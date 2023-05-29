@@ -8,11 +8,12 @@ const SvgEditor = () => {
   const projectId = useTypedSelector(state => state.project.projectId);
   const projectData = useTypedSelector(state => state.project.projectData);
 
-  useQuery(['projectData', projectId], () => actions.getProjectById(projectId as string | number), {
+  const { isFetching } = useQuery(['projectData', projectId], () => actions.getProjectById(projectId as string | number), {
     enabled: projectId !== null
   });
 
   if (!projectId) return <div>Project Id is not defined!</div>;
+  if (isFetching) return <div>Data fetching.</div>;
   if (!projectData) return <div>Project wasn`t download.</div>;
 
   return (
