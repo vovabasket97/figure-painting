@@ -11,7 +11,9 @@ interface IInitialState {
   projectData: IExtendedProject | null;
 }
 
-const message = 'Something was wrong on getting project id! Try please later.';
+const idReqBadMessage = 'Something was wrong on getting project id! Try please later.';
+const projectDataReqBadMessage = 'Something was wrong on getting project data! Try please later.';
+const invalidDataMessage = 'Invalid data, try another id.';
 
 export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thunkAPI): Promise<string> => {
   return await ProjectService.getProjectId()
@@ -19,8 +21,8 @@ export const getProjectId = createAsyncThunk('step1/getProjectId', async (_, thu
       return res.data.id;
     })
     .catch(() => {
-      thunkAPI.rejectWithValue(message);
-      return message;
+      thunkAPI.rejectWithValue(idReqBadMessage);
+      return idReqBadMessage;
     });
 });
 
@@ -30,19 +32,19 @@ export const getProjectById = createAsyncThunk('step1/getProjectById', async (id
       .then(res => {
         const check = validateData(res.data.project.items);
 
-        if (!check) req(message);
+        if (!check) req(invalidDataMessage);
 
         resolve(res.data);
       })
       .catch(() => {
-        req(message);
+        req(projectDataReqBadMessage);
       });
   })
     .then(res => {
       return thunkAPI.fulfillWithValue(res.project);
     })
-    .catch(() => {
-      return thunkAPI.rejectWithValue(message);
+    .catch((error: string) => {
+      return thunkAPI.rejectWithValue(error);
     });
 });
 
@@ -103,11 +105,12 @@ const ProjectSlice = createSlice({
       );
     });
     builder.addCase(getProjectById.rejected, (state, action) => {
-      state.error = action.payload as string;
+      const value = action.payload as string;
+      state.error = value;
       notifications.update(
         notificationConfig.error({
           id: 'loading-data-by-id',
-          message: 'Please, try another time. Or another Id.'
+          message: value
         })
       );
     });
