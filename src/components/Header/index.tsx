@@ -1,6 +1,6 @@
 import { FC, memo } from 'react';
 import { Header as HeaderComp, Group, Button, Box, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconLivePhoto } from '@tabler/icons-react';
 import ProjectIdModal from 'components/ProjectIdModal';
 import { useTypedSelector } from 'hooks/useTypedSelector';
@@ -9,14 +9,16 @@ const Header: FC = () => {
   const projectId = useTypedSelector(state => state.project.projectId);
   const [opened, { open, close }] = useDisclosure(true);
 
+  const matches = useMediaQuery('(max-width: 650px)');
+
   return (
     <Box>
       <HeaderComp height={60} px='md'>
-        <Group position='apart' sx={{ height: '100%' }}>
+        <Group noWrap position='apart' sx={{ height: '100%' }}>
           <IconLivePhoto size={30} />
 
           <Group spacing='xl'>
-            {projectId && (
+            {projectId && !matches && (
               <Group spacing='5px'>
                 <Text c='dimmed' size='sm' sx={{ lineHeight: 1 }}>
                   Project id:
